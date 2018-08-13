@@ -31,6 +31,7 @@ let command =
     (let open Command.Let_syntax in
      let%map_open from = from_param
      and to_ = to_param
+     and () = Log.Global.set_level_via_param ()
      in
      fun () -> sync ~from ~to_)
 ;;

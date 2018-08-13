@@ -22,8 +22,11 @@ let of_string string ~path =
 
 let run_at t ~f ~prog ~args =
   match t with
-  | Local { path = _ } -> f ~prog ~args
+  | Local { path = _ } ->
+    Log.Global.debug !"%{sexp: string list}" (prog :: args);
+    f ~prog ~args
   | Remote { ssh_url; path = _ } ->
+    Log.Global.debug !"%{sexp: string list}" ("ssh" :: ssh_url :: prog :: args);
     f ~prog:"ssh"
       ~args:([ ssh_url
              ; prog
@@ -34,7 +37,7 @@ let run_lines_at =
   run_at ~f:(fun ~prog ~args -> Process.run_lines () ~prog ~args)
 ;;
 
-let run_with_output_to_writer_at t ~writer =
+let run_with_output_to_writer_at t ~writer ~label =
   run_at t ~f:(fun ~prog ~args ->
     let open Deferred.Or_error.Let_syntax in
     let%bind proc = Process.create () ~prog ~args in
@@ -43,32 +46,51 @@ let run_with_output_to_writer_at t ~writer =
       Pipe.transfer_id
         (Reader.pipe (Process.stdout proc))
         (Writer.pipe writer)
-    and () = Reader.transfer (Process.stderr proc) Writer.(pipe (force stderr))
+    and () =
+      Process.stderr proc
+      |> Reader.lines
+      |> Pipe.iter_without_pushback
+           ~f:(Log.Global.info "%s"
+                 ~tags:[ "cmd", label
+                       ; "fd", "stderr"
+                       ])
     in
     let%bind exit_or_signal = Process.wait proc in
-    Debug.eprint_s [%message "writer process exited"];
     let%bind () = Writer.close writer in
-    Debug.eprint_s [%message "writer end closed"];
     return (Unix.Exit_or_signal.or_error exit_or_signal))
 ;;
 
-let run_with_input_from_reader_at t ~reader =
-  let transfer r w = Pipe.transfer_id (Reader.pipe r) (Writer.pipe w) in
+let run_with_input_from_reader_at t ~reader ~label =
   run_at t ~f:(fun ~prog ~args ->
     let open Deferred.Or_error.Let_syntax in
     let%bind proc = Process.create () ~prog ~args in
     let open Deferred.Let_syntax in
     let%bind () =
-      let%bind () = transfer reader (Process.stdin proc) in
-      Debug.eprint_s [%message "reader stdin written to"];
+      let%bind () =
+        Pipe.transfer_id
+          (Reader.pipe reader)
+          (Writer.pipe (Process.stdin proc))
+      in
       let%bind () = Writer.close (Process.stdin proc) in
-      Debug.eprint_s [%message "reader stdin closed"];
       return ()
-    and () = transfer (Process.stdout proc) (force Writer.stdout)
-    and () = transfer (Process.stderr proc) (force Writer.stderr)
+    and () =
+      Process.stdout proc
+      |> Reader.lines
+      |> Pipe.iter_without_pushback
+           ~f:(Log.Global.info "%s"
+                 ~tags:[ "cmd", label
+                       ; "fd", "stdout"
+                       ])
+    and () =
+      Process.stderr proc
+      |> Reader.lines
+      |> Pipe.iter_without_pushback
+           ~f:(Log.Global.info "%s"
+                 ~tags:[ "cmd", label
+                       ; "fd", "stderr"
+                       ])
     in
    let%bind exit_or_signal = Process.wait proc in
-   Debug.eprint_s [%message "reader process exited"];
    return (Unix.Exit_or_signal.or_error exit_or_signal))
 ;;
 
@@ -90,6 +112,7 @@ let parse_snapshot line =
       Ok { Snapshot.uuid; received_uuid; path }
     | fields -> Or_error.error_s
                   [%message "wrong number of fields" [%here]
+                              (fields : string list)
                               ~n:(List.length fields : int)])
 ;;
 
@@ -125,6 +148,7 @@ let send t ~snapshot ~available ~to_:writer =
     ~args:([ "send" ]
            @ available_args
            @ [ path t ^/ Snapshot.name snapshot ])
+    ~label:"send"
 ;;
 
 let receive t ~from:reader =
@@ -134,4 +158,5 @@ let receive t ~from:reader =
     ~args:([ "receive"
            ; path t
            ])
+    ~label:"receive"
 ;;
