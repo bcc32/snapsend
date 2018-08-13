@@ -1,0 +1,6 @@
+#+TITLE: snapsend
+* Synopsis
+A straightforward program to synchronize btrfs snapshots in a directory on one
+host with those in a directory on another host, using SSH for transport.
+Snapshots in the same directory are used as clone sources to facilitate
+incremental backup setups.
