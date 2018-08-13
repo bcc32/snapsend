@@ -72,13 +72,18 @@ let run_with_input_from_reader_at t ~reader =
    return (Unix.Exit_or_signal.or_error exit_or_signal))
 ;;
 
+let split_words =
+  let re = Re.(compile (rep1 space)) in
+  Re.split re
+;;
+
 let parse_snapshot line =
   let parse_uuid_option = function
     | "-" -> None
     | s -> Some (Uuid.of_string s)
   in
   Or_error.try_with_join (fun () ->
-    match String.split line ~on:' ' with
+    match split_words line with
     | [ _; _; _; _; _; _; _; _; received_uuid; _; uuid; _; path ] ->
       let uuid = Uuid.of_string uuid in
       let received_uuid = parse_uuid_option received_uuid in
