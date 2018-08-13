@@ -1,0 +1,10 @@
+;; -*- tuareg-dune -*-
+
+(library
+ (name snapsend_lib)
+ (libraries
+  core
+  async
+  re)
+ (preprocess (pps ppx_jane))
+ (synopsis "Synchronize btrfs snapshots between two hosts over ssh."))
