@@ -12,5 +12,10 @@ build: [
   [ "dune" "build" "-p" name "-j" jobs ]
 ]
 depends: [
-  "dune" {build}
+  "dune"     {build}
+  "ppx_jane" {build & >= "v0.11.0" & < "v0.12.0"}
+
+  "core"     {>= "v0.11.0" & < "v0.12.0"}
+  "async"    {>= "v0.11.0" & < "v0.12.0"}
+  "re"       {>= "1.7.3"}
 ]
