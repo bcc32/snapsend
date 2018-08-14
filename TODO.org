@@ -1,1 +1,3 @@
 * TODO Add option to delete snapshots not present in =from=
+* TODO Use raw ~dup()~ calls instead of readers/writers
+  Saves some extra layers in the pipeline
