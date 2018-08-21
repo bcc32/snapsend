@@ -37,6 +37,33 @@ let run_lines_at =
   run_at ~f:(fun ~prog ~args -> Process.run_lines () ~prog ~args)
 ;;
 
+let run_share_output_at t ~label =
+  run_at t ~f:(fun ~prog ~args ->
+    let open Deferred.Or_error.Let_syntax in
+    (* TODO: when qualified bind is released, use that. *)
+    let%bind proc = Process.create () ~prog ~args in
+    let open Deferred.Let_syntax in
+    let%bind () =
+      Process.stdout proc
+      |> Reader.lines
+      |> Pipe.iter_without_pushback
+           ~f:(Log.Global.info "%s"
+                 ~tags:[ "cmd", label
+                       ; "fd", "stdout"
+                       ])
+    and () =
+      Process.stderr proc
+      |> Reader.lines
+      |> Pipe.iter_without_pushback
+           ~f:(Log.Global.info "%s"
+                 ~tags:[ "cmd", label
+                       ; "fd", "stderr"
+                       ])
+    in
+    let%bind exit_or_signal = Process.wait proc in
+    return (Unix.Exit_or_signal.or_error exit_or_signal))
+;;
+
 let run_with_output_to_writer_at t ~writer ~label =
   run_at t ~f:(fun ~prog ~args ->
     let open Deferred.Or_error.Let_syntax in
@@ -159,4 +186,14 @@ let receive t ~from:reader =
            ; path t
            ])
     ~label:"receive"
+;;
+
+let delete t snapshot =
+  run_share_output_at t
+    ~prog:"btrfs"
+    ~args:([ "subvolume"
+           ; "delete"
+           ; path t ^/ Snapshot.name snapshot
+           ])
+    ~label:"delete"
 ;;

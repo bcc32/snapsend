@@ -22,3 +22,8 @@ val receive
   :  t
   -> from : Reader.t
   -> unit Deferred.Or_error.t
+
+val delete
+  :  t
+  -> Snapshot.t
+  -> unit Deferred.Or_error.t
