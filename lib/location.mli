@@ -25,5 +25,5 @@ val receive
 
 val delete
   :  t
-  -> Snapshot.t
+  -> Snapshot.t list
   -> unit Deferred.Or_error.t

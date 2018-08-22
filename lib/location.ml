@@ -188,12 +188,16 @@ let receive t ~from:reader =
     ~label:"receive"
 ;;
 
-let delete t snapshot =
-  run_share_output_at t
-    ~prog:"btrfs"
-    ~args:([ "subvolume"
-           ; "delete"
-           ; path t ^/ Snapshot.name snapshot
-           ])
-    ~label:"delete"
+let delete t snapshots =
+  match
+    List.map snapshots ~f:(fun snap -> path t ^/ Snapshot.name snap)
+  with
+  | [] -> Deferred.Or_error.ok_unit
+  | _::_ as paths ->
+    run_share_output_at t
+      ~prog:"btrfs"
+      ~args:([ "subvolume"
+             ; "delete"
+             ] @ paths)
+      ~label:"delete"
 ;;

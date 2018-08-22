@@ -36,7 +36,6 @@ let sync ~from ~to_ ~delete_extraneous =
   if delete_extraneous
   then (
     let to_delete = Set.diff snapshots_to snapshots_from in
-    Set.to_list to_delete
-    |> Deferred.Or_error.List.iter ~how:`Parallel ~f:(Location.delete to_))
+    Location.delete to_ (Set.to_list to_delete))
   else Deferred.Or_error.ok_unit
 ;;
