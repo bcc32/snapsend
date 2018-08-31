@@ -9,7 +9,8 @@ module T = struct
     }
   [@@deriving compare, fields, sexp]
 end
+
 include T
-include Comparable.Make(T)
+include Comparable.Make (T)
 
 let name t = Filename.basename t.path
