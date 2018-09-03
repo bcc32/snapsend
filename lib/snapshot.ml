@@ -14,3 +14,4 @@ include T
 include Comparable.Make (T)
 
 let name t = Filename.basename t.path
+let to_string_hum = name

@@ -5,6 +5,8 @@
  (libraries
   core
   async
-  re)
+  async_interactive
+  re
+  shexp.process)
  (preprocess (pps ppx_jane))
  (synopsis "Synchronize btrfs snapshots between two hosts over ssh."))

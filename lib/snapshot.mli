@@ -12,3 +12,4 @@ include Comparable.S with type t := t
 include Sexpable.S with type t := t
 
 val name : t -> string
+val to_string_hum : t -> string

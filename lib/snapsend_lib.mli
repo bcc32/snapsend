@@ -3,7 +3,8 @@ open! Async
 module Location = Location
 
 val sync
-  :  from:Location.t
+  :  ?delete_extraneous:bool (** @default [false] *)
+  -> from:Location.t
   -> to_:Location.t
-  -> delete_extraneous:bool
+  -> unit
   -> unit Deferred.Or_error.t

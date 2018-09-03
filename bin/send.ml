@@ -46,5 +46,5 @@ let command =
     and to_ = to_param
     and delete_extraneous = delete_extraneous_param
     and () = Log.Global.set_level_via_param () in
-    fun () -> sync ~from ~to_ ~delete_extraneous)
+    fun () -> sync () ~from ~to_ ~delete_extraneous)
 ;;
