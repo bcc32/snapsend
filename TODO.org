@@ -1,7 +1,7 @@
 #+TODO: TODO(t) MAYBE(m) | DONE(d) NOTDONE(n)
 
 * DONE Add option to delete snapshots not present in =from=
-  CLOSED: [2018-08-20 Mon 21:59]
+CLOSED: [2018-08-20 Mon 21:59]
 * DONE Only show btrfs output as debug or verbose, add nicer messages
 CLOSED: [2018-09-03 Mon 02:25]
 ** DONE Use Async_interactive jobs to display output nicely.
@@ -9,4 +9,5 @@ CLOSED: [2018-09-03 Mon 02:26]
 * DONE Use shexp for process control
 CLOSED: [2018-09-03 Mon 02:26]
 * MAYBE Use raw ~dup()~ calls instead of readers/writers
-  Saves some extra layers in the pipeline
+Saves some extra layers in the pipeline
+* TODO Warn if snapshot is not fully sent and marked readonly
