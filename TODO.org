@@ -8,6 +8,7 @@ CLOSED: [2018-09-03 Mon 02:25]
 CLOSED: [2018-09-03 Mon 02:26]
 * DONE Use shexp for process control
 CLOSED: [2018-09-03 Mon 02:26]
-* MAYBE Use raw ~dup()~ calls instead of readers/writers
+* NOTDONE Use raw ~dup()~ calls instead of readers/writers
+CLOSED: [2018-09-03 Mon 17:43]
 Saves some extra layers in the pipeline
 * TODO Warn if snapshot is not fully sent and marked readonly
