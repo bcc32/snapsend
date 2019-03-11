@@ -5,7 +5,10 @@ open Snapsend_lib
 let from_param =
   let open Command.Let_syntax in
   let%map_open path =
-    flag "-from-path" (required file) ~doc:"PATH path to the snapshot source directory"
+    flag
+      "-from-path"
+      (required Filename.arg_type)
+      ~doc:"PATH path to the snapshot source directory"
   and from =
     flag
       "-from"
@@ -20,7 +23,7 @@ let to_param =
   let%map_open path =
     flag
       "-to-path"
-      (required file)
+      (required Filename.arg_type)
       ~doc:"PATH path to the snapshot destination directory"
   and to_ =
     flag
