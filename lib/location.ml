@@ -1,27 +1,22 @@
 open! Core
 open! Async
 
+let ssh_args = [ "-o"; "PasswordAuthentication=no" ]
+
 type t =
   | Local of { path : string }
-  | Remote of { ssh_url : string; path : string }
+  | Ssh of { host : string; path : string }
+[@@deriving sexp]
 
 let path = function
   | Local { path }
-  | Remote { ssh_url = _; path } -> path
-;;
-
-let of_string string ~path =
-  if string = "localhost"
-  then Local { path }
-  else if String.is_prefix string ~prefix:"ssh://"
-  then Remote { ssh_url = string; path }
-  else raise_s [%message "invalid location string" (string : string)]
+  | Ssh { host = _; path } -> path
 ;;
 
 let run_at t prog args =
   match t with
   | Local { path = _ } -> Shexp_process.run prog args
-  | Remote { ssh_url; path = _ } -> Shexp_process.run "ssh" ([ "-o"; "PasswordAuthentication=no"; ssh_url; prog ] @ args)
+  | Ssh { host; path = _ } -> Shexp_process.run "ssh" (ssh_args @ [ host; prog ] @ args)
 ;;
 
 let split_words =

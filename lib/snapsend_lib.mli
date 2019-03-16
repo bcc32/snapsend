@@ -1,10 +1,5 @@
 open! Core
 open! Async
-module Location = Location
+module Config = Config
 
-val sync :
-  ?delete_extraneous:bool (** @default [false] *)
-  -> from:Location.t
-  -> to_:Location.t
-  -> unit
-  -> unit Deferred.Or_error.t
+val sync : Config.t -> unit Deferred.Or_error.t

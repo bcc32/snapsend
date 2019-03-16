@@ -1,6 +1,6 @@
 open! Core
 open! Async
-module Location = Location
+module Config = Config
 
 let context =
   Lazy_deferred.create (fun () ->
@@ -44,8 +44,9 @@ let send_one snapshot ~from ~to_ ~common =
     |> eval)
 ;;
 
-let sync ?(delete_extraneous = false) ~from ~to_ () =
+let sync config =
   let open Deferred.Or_error.Let_syntax in
+  let { Config.from; to_; delete_extraneous } = config in
   let%bind snapshots_from = Location.list_snapshots from |> eval
   and snapshots_to = Location.list_snapshots to_ |> eval in
   let snapshots_from = Snapshot.Set.of_list snapshots_from in
