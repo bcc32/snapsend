@@ -8,4 +8,4 @@ type t =
   }
 [@@deriving sexp]
 
-let read_from_file filename = Reader.load_sexp filename [%of_sexp: t]
+let read_from_file filename = Reader.load_sexps filename [%of_sexp: t]
