@@ -4,7 +4,8 @@ open! Async
 type t =
   { from : Location.t
   ; to_ : Location.t
-  ; delete_extraneous : bool [@default true] [@sexp.drop_default.equal]
+  ; delete_extraneous : bool
+  ; show_progress : bool
   }
 [@@deriving sexp]
 

@@ -34,17 +34,24 @@ let eval proc =
   return (Or_error.of_exn_result result)
 ;;
 
-let send_one snapshot ~from ~to_ ~common =
+let progress_meter =
+  Shexp_process.run
+    "pv"
+    [ "--progress"; "--timer"; "--rate"; "--average-rate"; "--bytes" ]
+;;
+
+let send_one snapshot ~from ~to_ ~common ~show_progress =
   Async_interactive.Job.run !"sending snapshot %{Snapshot#hum}" snapshot ~f:(fun () ->
-    let open Shexp_process.Let_syntax in
-    Location.send from ~snapshot ~available:(Set.to_list common)
-    |- Location.receive to_
-    |> eval)
+    let send = Location.send from ~snapshot ~available:(Set.to_list common) in
+    let recv = Location.receive to_ in
+    eval
+      Shexp_process.Infix.(
+        if show_progress then send |- progress_meter |- recv else send |- recv))
 ;;
 
 let sync config =
   let open Deferred.Or_error.Let_syntax in
-  let { Config.from; to_; delete_extraneous } = config in
+  let { Config.from; to_; delete_extraneous; show_progress } = config in
   Async_interactive.Job.run
     !"synchronizing from %{sexp:Location.t} to %{sexp:Location.t}"
     from
@@ -60,7 +67,7 @@ let sync config =
         Set.diff snapshots_from common
         |> Set.to_list
         |> Deferred.Or_error.List.fold ~init:common ~f:(fun common snapshot ->
-          let%map () = send_one snapshot ~from ~to_ ~common in
+          let%map () = send_one snapshot ~from ~to_ ~common ~show_progress in
           Set.add common snapshot)
       in
       if delete_extraneous

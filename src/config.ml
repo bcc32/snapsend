@@ -5,6 +5,7 @@ type t =
   { from : Location.t
   ; to_ : Location.t
   ; delete_extraneous : bool [@default true] [@sexp.drop_default.equal]
+  ; show_progress : bool [@default true] [@sexp.drop_default.equal]
   }
 [@@deriving sexp]
 
