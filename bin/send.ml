@@ -1,6 +1,5 @@
 open! Core
 open! Async
-open Snapsend_lib
 
 let config_param =
   let open Command.Let_syntax in
@@ -16,6 +15,6 @@ let command =
      and () = Log.Global.set_level_via_param () in
      fun () ->
        let open Deferred.Or_error.Let_syntax in
-       let%bind config = Config.read_from_file config_path in
-       sync config)
+       let%bind config = Snapsend.Config.read_from_file config_path in
+       Snapsend.sync config)
 ;;

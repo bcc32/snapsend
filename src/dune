@@ -1,7 +1,7 @@
 ;; -*- tuareg-dune -*-
 
 (library
- (name snapsend_lib)
+ (name snapsend)
  (libraries
   core
   async

@@ -6,5 +6,5 @@
  (libraries
   core
   async
-  snapsend_lib)
+  snapsend)
  (preprocess (pps ppx_jane)))
