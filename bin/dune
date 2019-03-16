@@ -1,6 +1,7 @@
 ;; -*- tuareg-dune -*-
 
 (executable
+ (name main)
  (public_name snapsend)
  (libraries
   core
