@@ -15,8 +15,10 @@ Saves some extra layers in the pipeline
 https://ocaml.janestreet.com/ocaml-core/latest/doc/async_unix/Async_unix/Signal/
 * TODO Use pv as progress meter
 https://ivarch.com/programs/pv.shtml
-* TODO sexp format config file in place of command-line interface
+* DONE sexp format config file in place of command-line interface
+CLOSED: [2019-03-16 Sat 00:40]
 Easier to specify structured arguments like local vs. ssh
-* TODO Lockfile
+* DONE Lockfile
+CLOSED: [2019-03-16 Sat 00:52]
 Probably do the sexp config file first, then use a lockfile to prevent the same
 config being run multiple times concurrently.
