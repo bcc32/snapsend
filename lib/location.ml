@@ -21,7 +21,7 @@ let of_string string ~path =
 let run_at t prog args =
   match t with
   | Local { path = _ } -> Shexp_process.run prog args
-  | Remote { ssh_url; path = _ } -> Shexp_process.run "ssh" ([ ssh_url; prog ] @ args)
+  | Remote { ssh_url; path = _ } -> Shexp_process.run "ssh" ([ "-o"; "PasswordAuthentication=no"; ssh_url; prog ] @ args)
 ;;
 
 let split_words =
