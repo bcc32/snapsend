@@ -29,9 +29,11 @@ let context =
 
 let eval proc =
   let%bind context = Lazy_deferred.force_exn context in
-  Monitor.try_with_or_error (fun () ->
-    In_thread.run (fun () ->
-      Shexp_process.Logged.eval proc ~context ~log:(Log.Global.sexp ~level:`Debug)))
+  let%bind result, trace =
+    In_thread.run (fun () -> Shexp_process.Traced.eval proc ~context)
+  in
+  Log.Global.sexp ~level:`Debug trace;
+  return (Or_error.of_exn_result result)
 ;;
 
 let send_one snapshot ~from ~to_ ~common =
