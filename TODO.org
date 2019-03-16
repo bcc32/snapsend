@@ -12,3 +12,11 @@ CLOSED: [2018-09-03 Mon 02:26]
 CLOSED: [2018-09-03 Mon 17:43]
 Saves some extra layers in the pipeline
 * TODO Warn if snapshot is not fully sent and marked readonly
+https://ocaml.janestreet.com/ocaml-core/latest/doc/async_unix/Async_unix/Signal/
+* TODO Use pv as progress meter
+https://ivarch.com/programs/pv.shtml
+* TODO sexp format config file in place of command-line interface
+Easier to specify structured arguments like local vs. ssh
+* TODO Lockfile
+Probably do the sexp config file first, then use a lockfile to prevent the same
+config being run multiple times concurrently.
