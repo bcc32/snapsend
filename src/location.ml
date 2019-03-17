@@ -1,7 +1,7 @@
 open! Core
 open! Async
 
-let ssh_args = [ "-o"; "PasswordAuthentication=no" ]
+let ssh_args = [ "-o"; "BatchMode=yes" ]
 
 type t =
   | Local of { path : string }
