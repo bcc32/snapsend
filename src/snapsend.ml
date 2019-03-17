@@ -37,7 +37,15 @@ let eval proc =
 let progress_meter =
   Shexp_process.run
     "pv"
-    [ "--progress"; "--timer"; "--rate"; "--average-rate"; "--bytes" ]
+    [ "--progress"
+    ; "--timer"
+    ; "--rate"
+    ; "--average-rate"
+    ; "--bytes"
+    ; "--interval"
+    ; "0.1"
+    ; "--force"
+    ]
 ;;
 
 let send_one snapshot ~from ~to_ ~common ~show_progress =
