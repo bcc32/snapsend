@@ -10,16 +10,14 @@ let context =
     don't_wait_for
       (Pipe.iter_without_pushback
          (Reader.lines (Reader.create r))
-         ~f:(fun line ->
-           Log.Global.sexp ~level:`Debug [%message "command output" ~stdout:line]));
+         ~f:(fun line -> Log.Global.debug_s [%message "command output" ~stdout:line]));
     let%bind `Reader r, `Writer stderr =
       Unix.pipe (Info.create_s [%message "stderr pipe" [%here]])
     in
     don't_wait_for
       (Pipe.iter_without_pushback
          (Reader.lines (Reader.create r))
-         ~f:(fun line ->
-           Log.Global.sexp ~level:`Debug [%message "command output" ~stderr:line]));
+         ~f:(fun line -> Log.Global.debug_s [%message "command output" ~stderr:line]));
     return
       (Shexp_process.Context.create
          ()
@@ -32,7 +30,7 @@ let eval proc =
   let%bind result, trace =
     In_thread.run (fun () -> Shexp_process.Traced.eval proc ~context)
   in
-  Log.Global.sexp ~level:`Debug trace;
+  Log.Global.debug_s trace;
   return (Or_error.of_exn_result result)
 ;;
 
