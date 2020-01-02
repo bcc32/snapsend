@@ -54,7 +54,14 @@ let send t ~snapshot ~available =
     List.concat_map available ~f:(fun snapshot ->
       [ "-c"; path t ^/ Snapshot.name snapshot ])
   in
-  run_at t "btrfs" ([ "send" ] @ available_args @ [ path t ^/ Snapshot.name snapshot ])
+  let parent_args =
+  let snapshot =
+    List.max_elt available ~compare:(Comparable.lift String.compare ~f:Snapshot.name)
+    |> Option.value_exn
+    in
+    [ "-p"; path t ^/ Snapshot.name snapshot ]
+  in
+  run_at t "btrfs" ([ "send" ] @ available_args @ parent_args @ [ path t ^/ Snapshot.name snapshot ])
 ;;
 
 let receive t = run_at t "btrfs" [ "receive"; path t ]
