@@ -18,7 +18,7 @@ let command =
        let%bind configs = Snapsend.Config.read_from_file config_path in
        let lock_path = config_path ^ ".lock" in
        let%bind () =
-         if%map.Deferred.Let_syntax Lock_file_async.create ~unlink_on_exit:true lock_path
+         if%map.Deferred Lock_file_async.create ~unlink_on_exit:true lock_path
          then Ok ()
          else Or_error.error_s [%message "couldn't acquire lockfile" (lock_path : string)]
        in
