@@ -22,3 +22,6 @@ Easier to specify structured arguments like local vs. ssh
 CLOSED: [2019-03-16 Sat 00:52]
 Probably do the sexp config file first, then use a lockfile to prevent the same
 config being run multiple times concurrently.
+* TODO Warn if run outside screen/tmux session
+snapsend can take a long time, so it is usually advisable to run it in tmux so
+that you can easily disconnect your ssh session.
