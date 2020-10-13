@@ -35,11 +35,18 @@ let eval proc =
 ;;
 
 let send_one snapshot ~from ~to_ ~common =
-  Async_interactive.Job.run !"sending snapshot %{Snapshot#hum}" snapshot ~f:(fun () ->
-    let open Shexp_process.Let_syntax in
-    Location.send from ~snapshot ~available:(Set.to_list common)
-    |- Location.receive to_
-    |> eval)
+  Async_interactive.Job.run
+    !"%{Sexp#hum}"
+    [%message
+      "Sending"
+        ~snapshot:(snapshot |> Snapshot.to_string_hum : string)
+        (from : Location.t)
+        (to_ : Location.t)]
+    ~f:(fun () ->
+      let open Shexp_process.Let_syntax in
+      Location.send from ~snapshot ~available:(Set.to_list common)
+      |- Location.receive to_
+      |> eval)
 ;;
 
 let sync config =
