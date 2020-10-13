@@ -7,7 +7,7 @@ let
 in buildDunePackage rec {
   pname = "snapsend";
   version = "0.1.0";
-  src = lib.cleanSource ./.;
+  src = nix-gitignore.gitignoreFilterSource lib.cleanSourceFilter [ ] ./.;
   propagatedBuildInputs = [ async async_interactive core re shexp ];
   meta = { homepage = "https://github.com/bcc32/snapsend"; };
 }
