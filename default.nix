@@ -1,10 +1,7 @@
-with import <nixpkgs> { };
+{ lib, nix-gitignore, buildDunePackage, async, async_interactive, core
+, core_bench, re, shexp }:
 
-let
-  inherit (ocamlPackages)
-    buildDunePackage async async_interactive core core_bench re shexp;
-
-in buildDunePackage rec {
+buildDunePackage rec {
   pname = "snapsend";
   version = "0.1.0";
   useDune2 = true;
