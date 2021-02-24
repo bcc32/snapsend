@@ -1,8 +1,6 @@
 (executable
  (name main)
  (public_name snapsend)
- (libraries
-  core
-  async
-  snapsend)
- (preprocess (pps ppx_jane)))
+ (libraries core async snapsend)
+ (preprocess
+  (pps ppx_jane)))

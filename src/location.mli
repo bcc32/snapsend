@@ -3,7 +3,10 @@ open! Async
 
 type t =
   | Local of { path : string }
-  | Ssh of { host : string; path : string }
+  | Ssh of
+      { host : string
+      ; path : string
+      }
 [@@deriving sexp]
 
 val list_snapshots : t -> Snapshot.t list Shexp_process.t

@@ -5,12 +5,14 @@ let ssh_args = [ "-o"; "BatchMode=yes"; "-S"; "none"; "-T" ]
 
 type t =
   | Local of { path : string }
-  | Ssh of { host : string; path : string }
+  | Ssh of
+      { host : string
+      ; path : string
+      }
 [@@deriving sexp]
 
 let path = function
-  | Local { path }
-  | Ssh { host = _; path } -> path
+  | Local { path } | Ssh { host = _; path } -> path
 ;;
 
 let run_at t prog args =
