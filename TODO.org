@@ -25,3 +25,5 @@ config being run multiple times concurrently.
 * TODO Warn if run outside screen/tmux session
 snapsend can take a long time, so it is usually advisable to run it in tmux so
 that you can easily disconnect your ssh session.
+* TODO Log when not interactive
+Remove dependency on async_interactive and instead log using Async.Log.
