@@ -1,11 +1,8 @@
-;; -*- tuareg-dune -*-
-
 (executable
  (name main)
  (public_name snapsend)
  (libraries
   core
   async
-  async.lock_file_async
   snapsend)
  (preprocess (pps ppx_jane)))
