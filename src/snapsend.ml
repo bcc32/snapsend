@@ -15,7 +15,9 @@ let context =
                (Pipe.iter_without_pushback ~f:(fun line ->
                   [%log.global.debug "command output" ~stream:name line]))))
       in
-      Shutdown.don't_finish_before flushed;
+      Shutdown.at_shutdown (fun () ->
+        let%bind.Deferred () = Writer.close writer in
+        flushed);
       return writer
     in
     let%bind stdout = create_logging_fd "stdout" [%here] >>| Writer.fd in
