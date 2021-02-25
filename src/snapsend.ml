@@ -5,21 +5,22 @@ module Config = Config
 
 let context =
   Lazy_deferred.create (fun () ->
-    let%bind.Deferred `Reader r, `Writer stdout =
-      Unix.pipe (Info.create_s [%message "stdout pipe" [%here]])
+    let create_logging_fd name here =
+      let%bind writer, `Closed_and_flushed_downstream flushed =
+        Monitor.try_with_or_error (fun () ->
+          Writer.of_pipe
+            (Info.create_s
+               [%message "logging fd" (name : string) (here : Source_code_position.t)])
+            (Pipe.create_writer
+               (Pipe.iter_without_pushback ~f:(fun line ->
+                  [%log.global.debug "command output" ~stream:name line]))))
+      in
+      Shutdown.don't_finish_before flushed;
+      return writer
     in
-    don't_wait_for
-      (Pipe.iter_without_pushback
-         (Reader.lines (Reader.create r))
-         ~f:(fun line -> [%log.global.debug "command output" ~stdout:line]));
-    let%bind.Deferred `Reader r, `Writer stderr =
-      Unix.pipe (Info.create_s [%message "stderr pipe" [%here]])
-    in
-    don't_wait_for
-      (Pipe.iter_without_pushback
-         (Reader.lines (Reader.create r))
-         ~f:(fun line -> [%log.global.debug "command output" ~stderr:line]));
-    Deferred.return
+    let%bind stdout = create_logging_fd "stdout" [%here] >>| Writer.fd in
+    let%bind stderr = create_logging_fd "stderr" [%here] >>| Writer.fd in
+    return
       (Shexp_process.Context.create
          ()
          ~stdout:(Fd.file_descr_exn stdout)
@@ -27,7 +28,7 @@ let context =
 ;;
 
 let eval proc =
-  let%bind context = Lazy_deferred.force context in
+  let%bind context = Lazy_deferred.force_exn context in
   let%bind result =
     match Log.Global.would_log (Some `Debug) with
     | true ->
