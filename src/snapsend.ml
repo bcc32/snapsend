@@ -1,24 +1,25 @@
 open! Core
 open! Async
+open! Import
 module Config = Config
 
 let context =
   Lazy_deferred.create (fun () ->
-    let%bind `Reader r, `Writer stdout =
+    let%bind.Deferred `Reader r, `Writer stdout =
       Unix.pipe (Info.create_s [%message "stdout pipe" [%here]])
     in
     don't_wait_for
       (Pipe.iter_without_pushback
          (Reader.lines (Reader.create r))
-         ~f:(fun line -> Log.Global.debug_s [%message "command output" ~stdout:line]));
-    let%bind `Reader r, `Writer stderr =
+         ~f:(fun line -> [%log.global.debug "command output" ~stdout:line]));
+    let%bind.Deferred `Reader r, `Writer stderr =
       Unix.pipe (Info.create_s [%message "stderr pipe" [%here]])
     in
     don't_wait_for
       (Pipe.iter_without_pushback
          (Reader.lines (Reader.create r))
-         ~f:(fun line -> Log.Global.debug_s [%message "command output" ~stderr:line]));
-    return
+         ~f:(fun line -> [%log.global.debug "command output" ~stderr:line]));
+    Deferred.return
       (Shexp_process.Context.create
          ()
          ~stdout:(Fd.file_descr_exn stdout)
@@ -26,12 +27,21 @@ let context =
 ;;
 
 let eval proc =
-  let%bind context = Lazy_deferred.force_exn context in
-  let%bind result, trace =
-    In_thread.run (fun () -> Shexp_process.Traced.eval proc ~context)
+  let%bind context = Lazy_deferred.force context in
+  let%bind result =
+    match Log.Global.would_log (Some `Debug) with
+    | true ->
+      let%bind result, trace =
+        Monitor.try_with_or_error (fun () ->
+          In_thread.run (fun () -> Shexp_process.Traced.eval proc ~context))
+      in
+      Log.Global.debug_s trace;
+      result |> Deferred.return |> Deferred.Or_error.of_exn_result
+    | false ->
+      Monitor.try_with_or_error (fun () ->
+        In_thread.run (fun () -> Shexp_process.eval proc ~context))
   in
-  Log.Global.debug_s trace;
-  return (Or_error.of_exn_result result)
+  return result
 ;;
 
 let send_one snapshot ~from ~to_ ~common =
@@ -50,7 +60,6 @@ let send_one snapshot ~from ~to_ ~common =
 ;;
 
 let sync config =
-  let open Deferred.Or_error.Let_syntax in
   let { Config.from; to_; delete_extraneous } = config in
   Async_interactive.Job.run
     !"synchronizing from %{sexp:Location.t} to %{sexp:Location.t}"

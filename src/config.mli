@@ -8,4 +8,4 @@ type t =
   }
 [@@deriving sexp]
 
-val read_from_file : string -> t list Deferred.Or_error.t
+val read_from_file : string -> t list Or_error.t Deferred.t

@@ -3,4 +3,4 @@
  (public_name snapsend)
  (libraries core async snapsend)
  (preprocess
-  (pps ppx_jane)))
+  (pps ppx_jane ppx_log)))

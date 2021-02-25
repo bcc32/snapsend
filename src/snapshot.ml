@@ -1,5 +1,6 @@
 open! Core
 open! Async
+open! Import
 
 module T = struct
   type t =
