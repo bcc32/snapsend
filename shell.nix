@@ -2,11 +2,11 @@
 
 with pkgs;
 mkShell {
+  inputsFrom = [ (ocamlPackages.callPackage ./. { }) ];
   buildInputs = [
-    # For opam
-    m4
-    opam
-    pkgconfig
-    # For this project
+    ocamlPackages.merlin
+    ocamlformat
+    ocamlPackages.ocp-indent
+    ocamlPackages.utop
   ];
 }
