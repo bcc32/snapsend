@@ -15,5 +15,7 @@ buildDunePackage rec {
       lib.makeBinPath [ btrfs-progs openssh ]
     }
       '';
+
+  passthru.checkInputs = [];
   meta = { homepage = "https://github.com/bcc32/snapsend"; };
 }
