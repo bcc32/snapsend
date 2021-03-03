@@ -11,8 +11,12 @@ CLOSED: [2018-09-03 Mon 02:26]
 * NOTDONE Use raw ~dup()~ calls instead of readers/writers
 CLOSED: [2018-09-03 Mon 17:43]
 Saves some extra layers in the pipeline
-* TODO Warn if snapshot is not fully sent and marked readonly
+* NOTDONE Warn if snapshot is not fully sent and marked readonly
+CLOSED: [2021-03-03 Wed 13:54]
 https://ocaml.janestreet.com/ocaml-core/latest/doc/async_unix/Async_unix/Signal/
+
+This is no longer necessary since systemd will report if a service
+start job terminates by signal.
 * NOTDONE Use pv as progress meter
 CLOSED: [2021-02-24 Wed 20:12]
 https://ivarch.com/programs/pv.shtml
