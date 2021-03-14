@@ -16,6 +16,6 @@ buildDunePackage rec {
     }
       '';
 
-  passthru.checkInputs = [];
+  passthru.checkInputs = [ ];
   meta = { homepage = "https://github.com/bcc32/snapsend"; };
 }
