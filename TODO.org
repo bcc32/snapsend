@@ -43,3 +43,4 @@ CLOCK: [2021-02-24 Wed 19:30]--[2021-02-24 Wed 20:11] =>  0:41
 Remove dependency on async_interactive and instead log using Async.Log.
 * DONE Subcommand to validate config
 CLOSED: [2021-03-01 Mon 20:22]
+* TODO Show stderr of processes by default
