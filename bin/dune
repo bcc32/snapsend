@@ -1,6 +1,6 @@
 (executable
  (name main)
  (public_name snapsend)
- (libraries core async snapsend)
+ (libraries async core core_unix.command_unix snapsend)
  (preprocess
   (pps ppx_jane ppx_log)))

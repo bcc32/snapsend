@@ -10,9 +10,9 @@
 (package
  (name snapsend)
  (depends
-  (async (and (>= v0.13.0) (< v0.14.0)))
-  (core (and (>= v0.13.0) (< v0.14.0)))
-  (ppx_jane (and (>= v0.13.0) (< v0.14.0)))
-  (ppx_log (and (>= v0.13.0) (< v0.14.0)))
+  (async (and (>= v0.15.0) (< v0.16.0)))
+  (core (and (>= v0.15.0) (< v0.16.0)))
+  (ppx_jane (and (>= v0.15.0) (< v0.16.0)))
+  (ppx_log (and (>= v0.15.0) (< v0.16.0)))
   (re (>= 1.7.3))
-  (shexp (and (>= v0.13.0) (< v0.14.0)))))
+  (shexp (and (>= v0.15.0) (< v0.16.0)))))

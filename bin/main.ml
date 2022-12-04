@@ -6,5 +6,5 @@ let () =
   Command.group
     ~summary:"Send btrfs snapshots between hosts"
     [ "send", Send.command; "validate-config", Validate_config.command ]
-  |> Command.run
+  |> Command_unix.run
 ;;

@@ -8,12 +8,12 @@ doc: "https://github.com/bcc32/snapsend"
 bug-reports: "https://github.com/bcc32/snapsend/issues"
 depends: [
   "dune" {>= "2.0"}
-  "async" {>= "v0.13.0" & < "v0.14.0"}
-  "core" {>= "v0.13.0" & < "v0.14.0"}
-  "ppx_jane" {>= "v0.13.0" & < "v0.14.0"}
-  "ppx_log" {>= "v0.13.0" & < "v0.14.0"}
+  "async" {>= "v0.15.0" & < "v0.16.0"}
+  "core" {>= "v0.15.0" & < "v0.16.0"}
+  "ppx_jane" {>= "v0.15.0" & < "v0.16.0"}
+  "ppx_log" {>= "v0.15.0" & < "v0.16.0"}
   "re" {>= "1.7.3"}
-  "shexp" {>= "v0.13.0" & < "v0.14.0"}
+  "shexp" {>= "v0.15.0" & < "v0.16.0"}
 ]
 build: [
   ["dune" "subst"] {pinned}
