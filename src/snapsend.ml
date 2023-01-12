@@ -13,7 +13,7 @@ let context =
                [%message "logging fd" (name : string) (here : Source_code_position.t)])
             (Pipe.create_writer
                (Pipe.iter_without_pushback ~f:(fun line ->
-                  [%log.global.debug "command output" ~stream:name line]))))
+                  [%log.global.info "command output" ~stream:name line]))))
       in
       Shutdown.at_shutdown (fun () ->
         let%bind.Deferred () = Writer.close writer in

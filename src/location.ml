@@ -57,10 +57,13 @@ let send t ~snapshot ~available =
     List.concat_map available ~f:(fun snapshot ->
       [ "-c"; path t ^/ Snapshot.name snapshot ])
   in
-  run_at t "btrfs" ([ "send" ] @ available_args @ [ path t ^/ Snapshot.name snapshot ])
+  run_at
+    t
+    "btrfs"
+    ([ "send"; "-q" ] @ available_args @ [ path t ^/ Snapshot.name snapshot ])
 ;;
 
-let receive t = run_at t "btrfs" [ "receive"; path t ]
+let receive t = run_at t "btrfs" [ "receive"; "-q"; path t ]
 
 let delete t snapshots =
   let open Shexp_process.Let_syntax in
