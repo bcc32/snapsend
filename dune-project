@@ -1,18 +1,1 @@
 (lang dune 2.0)
-(name snapsend)
-(generate_opam_files true)
-(license MIT)
-(authors "Aaron L. Zeng <me@bcc32.com>")
-(maintainers "Aaron L. Zeng <me@bcc32.com>")
-(source (github bcc32/snapsend))
-(homepage https://github.com/bcc32/snapsend)
-(documentation https://github.com/bcc32/snapsend)
-(package
- (name snapsend)
- (depends
-  (async (and (>= v0.15.0) (< v0.16.0)))
-  (core (and (>= v0.15.0) (< v0.16.0)))
-  (ppx_jane (and (>= v0.15.0) (< v0.16.0)))
-  (ppx_log (and (>= v0.15.0) (< v0.16.0)))
-  (re (>= 1.7.3))
-  (shexp (and (>= v0.15.0) (< v0.16.0)))))
