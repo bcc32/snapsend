@@ -42,7 +42,7 @@ let parse_snapshot line =
       [%message "wrong number of fields" ~expected:13 ~got:(List.length fields : int)]
 ;;
 
-let list_snapshots t =
+let list_snapshots_including_incomplete t =
   let open Shexp_process.Let_syntax in
   let parse_snapshots =
     Shexp_process.fold_lines ~init:[] ~f:(fun ac line ->
@@ -50,6 +50,16 @@ let list_snapshots t =
     >>| List.rev
   in
   run_at t "btrfs" [ "subvolume"; "list"; "-u"; "-R"; "-o"; path t ] |- parse_snapshots
+;;
+
+let list_snapshots_complete_only t =
+  let open Shexp_process.Let_syntax in
+  let parse_snapshots =
+    Shexp_process.fold_lines ~init:[] ~f:(fun ac line ->
+      return (parse_snapshot line :: ac))
+    >>| List.rev
+  in
+  run_at t "btrfs" [ "subvolume"; "list"; "-u"; "-R"; "-r"; "-o"; path t ] |- parse_snapshots
 ;;
 
 let send t ~snapshot ~available =

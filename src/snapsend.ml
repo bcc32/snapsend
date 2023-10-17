@@ -70,8 +70,30 @@ let send_one snapshot ~from ~to_ ~common =
 let sync config =
   let { Config.from; to_; delete_extraneous } = config in
   [%log.global.info "Starting sync" (from : Location.t) (to_ : Location.t)];
-  let%bind snapshots_from = Location.list_snapshots from |> eval
-  and snapshots_to = Location.list_snapshots to_ |> eval in
+  (* delete incomplete snapshots that failed to completely send previously *)
+  let%bind () =
+    let%bind incomplete_on_destination =
+      let%map maybe_incomplete_on_destination =
+        Location.list_snapshots_including_incomplete to_ |> eval
+      and complete_on_destination = Location.list_snapshots_complete_only to_ |> eval in
+      Set.diff
+        (Snapshot.Set.of_list maybe_incomplete_on_destination)
+        (Snapshot.Set.of_list complete_on_destination)
+    in
+    let%bind () =
+      if Set.is_empty incomplete_on_destination
+      then return ()
+      else (
+        [%log.global.info
+          "deleting incomplete snapshots on destination"
+            ~count:(Set.length incomplete_on_destination : int)];
+        Location.delete to_ (Set.to_list incomplete_on_destination) |> eval)
+    in
+    return ()
+  in
+  (* send any snapshots not present on destination *)
+  let%bind snapshots_from = Location.list_snapshots_complete_only from |> eval
+  and snapshots_to = Location.list_snapshots_complete_only to_ |> eval in
   let snapshots_from = Snapshot.Set.of_list snapshots_from in
   let snapshots_to = Snapshot.Set.of_list snapshots_to in
   (* FIXME: This should be based on Uuid's, not names/paths. *)
