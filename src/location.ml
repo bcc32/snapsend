@@ -59,7 +59,8 @@ let list_snapshots_complete_only t =
       return (parse_snapshot line :: ac))
     >>| List.rev
   in
-  run_at t "btrfs" [ "subvolume"; "list"; "-u"; "-R"; "-r"; "-o"; path t ] |- parse_snapshots
+  run_at t "btrfs" [ "subvolume"; "list"; "-u"; "-R"; "-r"; "-o"; path t ]
+  |- parse_snapshots
 ;;
 
 let send t ~snapshot ~available =
