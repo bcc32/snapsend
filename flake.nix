@@ -13,7 +13,9 @@
           inherit system;
           overlays = [ ocaml-overlays.overlays.default ];
         };
-      in with pkgs; rec {
+      in with pkgs;
+      let ocamlPackages = ocaml-ng.ocamlPackages_4_14;
+      in rec {
         devShells.default = mkShell {
           inputsFrom = [ packages.default ];
           buildInputs = lib.optional stdenv.isLinux inotify-tools ++ [
