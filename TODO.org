@@ -50,3 +50,5 @@ CLOSED: [2025-08-12 Tue 23:59]
 CLOCK: [2025-08-13 Wed 01:15]--[2025-08-13 Wed 01:28] =>  0:13
 :END:
 [2025-08-13 Wed 01:15]
+* TODO Reuse ssh connection across sending multiple snapshots
+[2025-08-12 Tue 20:25]
