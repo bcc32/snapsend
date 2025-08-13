@@ -6,16 +6,26 @@
     ocaml-overlays.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, flake-utils, nixpkgs, ocaml-overlays }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      flake-utils,
+      nixpkgs,
+      ocaml-overlays,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = import nixpkgs {
           inherit system;
           overlays = [ ocaml-overlays.overlays.default ];
         };
-      in with pkgs;
-      let ocamlPackages = ocaml-ng.ocamlPackages_4_14;
-      in rec {
+      in
+      with pkgs;
+      let
+        ocamlPackages = ocaml-ng.ocamlPackages_4_14;
+      in
+      rec {
         devShells.default = mkShell {
           inputsFrom = [ packages.default ];
           buildInputs = lib.optional stdenv.isLinux inotify-tools ++ [
@@ -31,16 +41,28 @@
           version = "0.1.0";
           useDune2 = true;
           src = ./.;
-          buildInputs = with ocamlPackages; [ async core ppx_log re shexp ];
+          buildInputs = with ocamlPackages; [
+            async
+            core
+            ppx_log
+            re
+            shexp
+          ];
           nativeBuildInputs = [ makeBinaryWrapper ];
 
           postFixup = ''
             wrapProgram $out/bin/snapsend --prefix PATH : ${
-              lib.makeBinPath [ btrfs-progs openssh ]
+              lib.makeBinPath [
+                btrfs-progs
+                openssh
+              ]
             }
           '';
 
-          meta = { homepage = "https://github.com/bcc32/snapsend"; };
+          meta = {
+            homepage = "https://github.com/bcc32/snapsend";
+          };
         };
-      });
+      }
+    );
 }
