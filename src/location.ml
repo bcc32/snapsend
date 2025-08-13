@@ -5,14 +5,14 @@ open! Import
 let ssh_args = [ "-o"; "BatchMode=yes"; "-e"; "none"; "-S"; "none"; "-T" ]
 
 type t =
-  | Local of { path : string }
+  | Local of { path : File_path.Absolute.t }
   | Ssh of
       { host : string
-      ; path : string
+      ; path : File_path.Absolute.t
       }
 [@@deriving sexp]
 
-let path = function
+let snapshot_dir_path = function
   | Local { path } | Ssh { host = _; path } -> path
 ;;
 
@@ -36,7 +36,8 @@ let parse_snapshot line =
   | [ _; _; _; _; _; _; _; _; received_uuid; _; uuid; _; path ] ->
     let uuid = Uuid.of_string uuid in
     let received_uuid = parse_uuid_option received_uuid in
-    { Snapshot.uuid; received_uuid; path }
+    let basename = File_path.Relative.of_string path |> File_path.Relative.basename in
+    ({ uuid; received_uuid; basename } : Snapshot.t)
   | fields ->
     raise_s
       [%message "wrong number of fields" ~expected:13 ~got:(List.length fields : int)]
@@ -49,7 +50,8 @@ let list_snapshots_including_incomplete t =
       return (parse_snapshot line :: ac))
     >>| List.rev
   in
-  run_at t "btrfs" [ "subvolume"; "list"; "-u"; "-R"; "-o"; path t ] |- parse_snapshots
+  run_at t "btrfs" [ "subvolume"; "list"; "-u"; "-R"; "-o"; !/$(snapshot_dir_path t) ]
+  |- parse_snapshots
 ;;
 
 let list_snapshots_complete_only t =
@@ -59,28 +61,36 @@ let list_snapshots_complete_only t =
       return (parse_snapshot line :: ac))
     >>| List.rev
   in
-  run_at t "btrfs" [ "subvolume"; "list"; "-u"; "-R"; "-r"; "-o"; path t ]
+  run_at
+    t
+    "btrfs"
+    [ "subvolume"; "list"; "-u"; "-R"; "-r"; "-o"; !/$(snapshot_dir_path t) ]
   |- parse_snapshots
 ;;
 
 let send t ~snapshot ~available =
   let available_args =
     List.concat_map available ~f:(fun snapshot ->
-      [ "-c"; path t ^/ Snapshot.name snapshot ])
+      [ "-c"; !/$(snapshot_dir_path t /!. Snapshot.basename snapshot) ])
   in
   run_at
     t
     "btrfs"
-    ([ "send"; "-q" ] @ available_args @ [ path t ^/ Snapshot.name snapshot ])
+    ([ "send"; "-q" ]
+     @ available_args
+     @ [ !/$(snapshot_dir_path t /!. Snapshot.basename snapshot) ])
 ;;
 
-let receive t = run_at t "btrfs" [ "receive"; "-q"; path t ]
+let receive t = run_at t "btrfs" [ "receive"; "-q"; !/$(snapshot_dir_path t) ]
 
 let delete t snapshots =
   let open Shexp_process.Let_syntax in
-  match List.map snapshots ~f:(fun snap -> path t ^/ Snapshot.name snap) with
-  | [] -> return ()
-  | _ :: _ as paths ->
-    Shexp_process.List.iter paths ~f:(Shexp_process.printf "%s\000")
-    |- run_at t "xargs" [ "-0"; "btrfs"; "subvolume"; "delete" ]
+  if List.is_empty snapshots
+  then return ()
+  else (
+    let paths =
+      List.map snapshots ~f:(fun snap -> snapshot_dir_path t /!. Snapshot.basename snap)
+    in
+    Shexp_process.List.iter paths ~f:(Shexp_process.printf !"%{File_path.Absolute}\000")
+    |- run_at t "xargs" [ "-0"; "btrfs"; "subvolume"; "delete" ])
 ;;

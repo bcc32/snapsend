@@ -6,7 +6,7 @@ module T = struct
   type t =
     { uuid : Uuid.Unstable.t [@compare.ignore]
     ; received_uuid : Uuid.Unstable.t option [@compare.ignore]
-    ; path : string
+    ; basename : File_path.Part.t
     }
   [@@deriving compare, fields, sexp]
 end
@@ -14,5 +14,4 @@ end
 include T
 include Comparable.Make (T)
 
-let name t = Filename.basename t.path
-let to_string_hum = name
+let to_string_hum t = (t.basename :> string)

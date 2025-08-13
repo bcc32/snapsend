@@ -44,6 +44,7 @@
           buildInputs = with ocamlPackages; [
             async
             core
+            file_path
             ppx_log
             re
             shexp

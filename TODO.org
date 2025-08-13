@@ -44,3 +44,9 @@ Remove dependency on async_interactive and instead log using Async.Log.
 * DONE Subcommand to validate config
 CLOSED: [2021-03-01 Mon 20:22]
 * TODO Show stderr of processes by default
+* DONE Use ~File_path~ types
+CLOSED: [2025-08-12 Tue 23:59]
+:LOGBOOK:
+CLOCK: [2025-08-13 Wed 01:15]--[2025-08-13 Wed 01:28] =>  0:13
+:END:
+[2025-08-13 Wed 01:15]

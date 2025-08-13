@@ -2,10 +2,10 @@ open! Core
 open! Async
 
 type t =
-  | Local of { path : string }
+  | Local of { path : File_path.Absolute.t }
   | Ssh of
       { host : string
-      ; path : string
+      ; path : File_path.Absolute.t
       }
 [@@deriving sexp]
 

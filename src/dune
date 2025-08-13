@@ -1,6 +1,6 @@
 (library
  (name snapsend)
- (libraries async core re shexp.process)
+ (libraries async core file_path re shexp.process)
  (preprocess
   (pps ppx_jane ppx_log))
  (synopsis "Synchronize btrfs snapshots between two hosts over ssh."))
