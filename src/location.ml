@@ -80,5 +80,7 @@ let delete t snapshots =
   let open Shexp_process.Let_syntax in
   match List.map snapshots ~f:(fun snap -> path t ^/ Snapshot.name snap) with
   | [] -> return ()
-  | _ :: _ as paths -> run_at t "btrfs" ([ "subvolume"; "delete" ] @ paths)
+  | _ :: _ as paths ->
+    Shexp_process.List.iter paths ~f:(Shexp_process.printf "%s\000")
+    |- run_at t "xargs" [ "-0"; "btrfs"; "subvolume"; "delete" ]
 ;;
