@@ -23,7 +23,7 @@
       in
       with pkgs;
       let
-        ocamlPackages = ocaml-ng.ocamlPackages_5_2;
+        ocamlPackages = ocaml-ng.ocamlPackages_5_4;
       in
       rec {
         devShells.default = mkShell {
